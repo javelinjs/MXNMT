@@ -39,7 +39,7 @@ def train():
     data_train = MaskedBucketSentenceIter(xconfig.train_source, xconfig.train_target, source_vocab,
                                           xconfig.target_label_size,
                                           xconfig.buckets, xconfig.batch_size,
-                                          source_init_states, target_init_states, seperate_char='\n',
+                                          source_init_states, seperate_char='\n',
                                           text2id=sentence2id, read_content=read_content,
                                           max_read_sample=xconfig.train_max_samples)
 
@@ -48,7 +48,7 @@ def train():
     _arg_params = None
 
     model = mx.model.FeedForward(ctx=xconfig.train_device,
-                                 symbol=sym_gen(len(source_vocab), xconfig.label_size),
+                                 symbol=sym_gen(len(source_vocab), xconfig.target_label_size),
                                  num_epoch=xconfig.num_epoch,
                                  optimizer=optimizer,
                                  initializer=mx.init.Xavier(rnd_type='gaussian', factor_type="in", magnitude=3),  # 35
@@ -58,7 +58,7 @@ def train():
     # Fit it
     model.fit(X=data_train,
               eval_metric=mx.metric.np(Perplexity),
-              # eval_data=data_train,
+              eval_data=data_train,
               batch_end_callback=[mx.callback.Speedometer(xconfig.batch_size, xconfig.show_every_x_batch),
                                   BatchCheckpoint(save_name=xconfig.checkpoint_name,
                                                   per_x_batch=xconfig.checkpoint_freq_batch),
@@ -67,4 +67,5 @@ def train():
                                   ])
 
 if __name__ == "__main__":
+    logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s:%(message)s', level=logging.INFO, datefmt='%H:%M:%S')
     train()

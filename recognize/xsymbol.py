@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, "../")
 from mxwrap.seq2seq.encoder import BiDirectionalLstmEncoder
 
 import xconfig
@@ -22,8 +24,7 @@ def bi_lstm_unroll(num_lstm_layer, seq_len, vocab_size, num_hidden, num_embed, d
     label = mx.sym.Reshape(data=label, shape=(-1,))
 
     # use mask
-    input_mask = mx.sym.Variable('source_mask')
-    loss_mask = mx.sym.transpose(data=input_mask)
+    loss_mask = mx.sym.transpose(data=encoder.input_mask)
     loss_mask = mx.sym.Reshape(data=loss_mask, shape=(-1, 1))
     pred = mx.sym.broadcast_mul(pred, loss_mask)
 

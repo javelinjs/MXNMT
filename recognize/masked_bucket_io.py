@@ -32,8 +32,7 @@ def default_text2id(sentence, the_vocab):
     words = [the_vocab[w] for w in words if len(w) > 0]
     return words
 
-def default_text2label(sentence):
-    labels = sentence.split(' ')
+def default_text2label(labels):
     labels = [int(l) for l in labels if len(l) > 0]
     return labels
 
@@ -90,7 +89,7 @@ class MaskedBucketSentenceIter(mx.io.DataIter):
                  buckets, batch_size, source_init_states,
                  source_data_name='source', source_mask_name='source_mask',
                  target_data_name='target',
-                 label_name='target_softmax_label',
+                 label_name='softmax_label',
                  seperate_char=' <eos> ', text2id=None, read_content=None,
                  label2id = None, max_read_sample=sys.maxsize):
         super(MaskedBucketSentenceIter, self).__init__()
@@ -133,7 +132,7 @@ class MaskedBucketSentenceIter(mx.io.DataIter):
             label = target_sentences[i]
             source_sentence = self.text2id(source, source_vocab)
             label_id = self.label2id(label)
-            if len(source_sentence) == 0 or len(target_sentence) == 0:
+            if len(source_sentence) == 0 or len(label_id) == 0:
                 continue
             for j, bkt in enumerate(buckets):
                 if bkt >= len(source):
@@ -144,9 +143,9 @@ class MaskedBucketSentenceIter(mx.io.DataIter):
                     # bucket size here
 
         # convert data into ndarrays for better speed during training
-        source_data = [np.zeros((len(x), buckets[i][0])) for i, x in enumerate(self.source_data)]
-        source_mask_data = [np.zeros((len(x), buckets[i][0])) for i, x in enumerate(self.source_data)]
-        label_data = [np.zeros((len(x), buckets[i][1])) for i, x in enumerate(self.label_data)]
+        source_data = [np.zeros((len(x), buckets[i])) for i, x in enumerate(self.source_data)]
+        source_mask_data = [np.zeros((len(x), buckets[i])) for i, x in enumerate(self.source_data)]
+        label_data = [np.zeros((len(x), buckets[i])) for i, x in enumerate(self.label_data)]
         for i_bucket in range(len(self.buckets)):
             for j in range(len(self.source_data[i_bucket])):
                 source = self.source_data[i_bucket][j]
@@ -200,9 +199,9 @@ class MaskedBucketSentenceIter(mx.io.DataIter):
         self.source_mask_data_buffer = []
         self.label_buffer = []
         for i_bucket in range(len(self.source_data)):
-            source_data = np.zeros((self.batch_size, self.buckets[i_bucket][0]))
-            source_mask_data = np.zeros((self.batch_size, self.buckets[i_bucket][0]))
-            label = np.zeros((self.batch_size, self.buckets[i_bucket][1]))
+            source_data = np.zeros((self.batch_size, self.buckets[i_bucket]))
+            source_mask_data = np.zeros((self.batch_size, self.buckets[i_bucket]))
+            label = np.zeros((self.batch_size, self.buckets[i_bucket]))
 
             self.source_data_buffer.append(source_data)
             self.source_mask_data_buffer.append(source_mask_data)

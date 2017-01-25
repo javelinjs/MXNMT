@@ -20,15 +20,14 @@ source_vocab_path = os.path.join(data_root, 'vocab.pkl')
 train_source = os.path.join(data_root, 'src.txt')
 train_target = os.path.join(data_root, 'target.txt')
 train_max_samples = 100000
-label_size = 4
+target_label_size = 4
 
 # model parameter
-batch_size = 128
+batch_size = 10
 bucket_stride = 10
 buckets = []
 for i in range(10, 70, bucket_stride):
-    for j in range(10, 70, bucket_stride):
-        buckets.append((i, j))
+    buckets.append(i)
 num_hidden = 512  # hidden unit in LSTM cell
 num_embed = 512  # embedding dimension
 num_lstm_layer = 1  # number of lstm layer
@@ -38,8 +37,8 @@ num_epoch = 60
 learning_rate = 1
 momentum = 0.1
 dropout = 0.5
-show_every_x_batch = 100
-eval_per_x_batch = 400
+show_every_x_batch = 1
+eval_per_x_batch = 1
 eval_start_epoch = 4
 
 # model save option
@@ -49,6 +48,6 @@ checkpoint_name = os.path.join(model_root, 'checkpoint_model')
 checkpoint_freq_batch = 1000  # save checkpoint model every x batch
 
 # train device
-train_device = [mx.context.cpu(0)]
+train_device = [mx.context.gpu(0)]
 # test device
-test_device = mx.context.cpu(0)
+test_device = mx.context.gpu(0)

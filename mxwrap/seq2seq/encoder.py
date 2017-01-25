@@ -132,6 +132,7 @@ class BiDirectionalLstmEncoder(object):
         # split mask
         if self.use_masking:
             input_mask = mx.sym.Variable('source_mask')
+            self.input_mask = input_mask
             masks = mx.sym.SliceChannel(data=input_mask, num_outputs=self.seq_len, name='sliced_source_mask')
 
         forward_hidden_all = []
