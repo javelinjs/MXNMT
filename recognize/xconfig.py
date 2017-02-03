@@ -18,7 +18,6 @@ source_vocab_path = os.path.join(data_root, 'vocab.pkl')
 
 # data set
 train_source = os.path.join(data_root, 'src.txt')
-train_target = os.path.join(data_root, 'target.txt')
 train_max_samples = 100000
 target_label_size = 4
 
@@ -51,3 +50,7 @@ checkpoint_freq_batch = 1000  # save checkpoint model every x batch
 train_device = [mx.context.gpu(0)]
 # test device
 test_device = mx.context.gpu(0)
+test_beam_size = 3
+model_to_load_prefix = os.path.join(model_root, 'recognize')
+model_to_load_number = 60
+test_input_file = os.path.join(data_root, 'src-test.txt')
